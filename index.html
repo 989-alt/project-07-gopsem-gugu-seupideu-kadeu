@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="2~9단 곱셈구구 자동화 훈련. 무작위 출제, 즉시 채점, 응답시간 측정. 학생 1:1 5분 훈련." />
+  <meta name="theme-color" content="#ffffff" />
+  <title>곱셈구구 스피드 카드</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='14' font-size='14'%3E%C3%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main id="app" aria-live="polite">
+
+    <!-- 화면 A: 설정 -->
+    <section id="screen-setup" class="screen" aria-labelledby="title-setup">
+      <header class="hero">
+        <h1 id="title-setup">곱셈구구 스피드 카드</h1>
+        <p class="subtitle">2~9단을 자동화 수준까지 — 5분 훈련.</p>
+      </header>
+
+      <div class="card">
+        <h2 class="label">연습할 단</h2>
+        <div class="chip-grid" role="group" aria-label="단 선택">
+          <!-- 토글 칩 — JS가 동적으로 채움 -->
+        </div>
+        <div class="preset-row" role="group" aria-label="단 프리셋">
+          <button type="button" class="preset" data-preset="all">전체</button>
+          <button type="button" class="preset" data-preset="hard">어려운 단 (6·7·8)</button>
+          <button type="button" class="preset" data-preset="even">짝수</button>
+          <button type="button" class="preset" data-preset="odd">홀수</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="label">문항 수</h2>
+        <div class="radio-row" role="radiogroup" aria-label="문항 수">
+          <label class="radio">
+            <input type="radio" name="count" value="10" /> <span>10문항</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="count" value="20" checked /> <span>20문항</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="count" value="30" /> <span>30문항</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button id="btn-start" type="button" class="btn-primary">시작</button>
+      </div>
+
+      <p id="last-summary" class="hint" hidden></p>
+    </section>
+
+    <!-- 화면 B: 카드 -->
+    <section id="screen-card" class="screen" aria-labelledby="title-card" hidden>
+      <h1 id="title-card" class="sr-only">곱셈구구 풀이</h1>
+
+      <div class="progress-row">
+        <span id="progress-text" class="mono-label">0 / 20</span>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" aria-label="진행률">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="card card-question">
+        <div id="question" class="question" aria-live="polite">7 × 8 = ?</div>
+        <input
+          id="answer"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          autocomplete="off"
+          maxlength="3"
+          class="answer-input"
+          aria-label="정답 입력"
+        />
+        <p id="feedback" class="feedback" aria-live="assertive">&nbsp;</p>
+      </div>
+
+      <div class="cta-row">
+        <button id="btn-quit" type="button" class="btn-ghost">그만두기</button>
+      </div>
+    </section>
+
+    <!-- 화면 C: 결과 -->
+    <section id="screen-result" class="screen" aria-labelledby="title-result" hidden>
+      <header class="hero">
+        <h1 id="title-result">세션 결과</h1>
+        <p class="subtitle" id="result-subtitle">잘했어요!</p>
+      </header>
+
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-label">정답률</div>
+          <div class="metric-value"><span id="m-accuracy">0</span><span class="metric-unit">%</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">평균 시간</div>
+          <div class="metric-value"><span id="m-avg">0.0</span><span class="metric-unit">초</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">최단 시간</div>
+          <div class="metric-value"><span id="m-min">0.0</span><span class="metric-unit">초</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="label">단별 정답률</h2>
+        <div class="chart-wrap">
+          <canvas id="chart-dan" width="800" height="280" aria-label="단별 정답률 막대그래프"></canvas>
+        </div>
+      </div>
+
+      <div class="card" id="wrong-card">
+        <h2 class="label">오답 목록 <span id="wrong-count" class="mono-label"></span></h2>
+        <ul id="wrong-list" class="wrong-list"></ul>
+      </div>
+
+      <div class="cta-row cta-row-wrap">
+        <button id="btn-retry-wrong" type="button" class="btn-secondary">오답만 다시</button>
+        <button id="btn-retry-all" type="button" class="btn-secondary">다시 풀기</button>
+        <button id="btn-png" type="button" class="btn-secondary">PNG 저장</button>
+        <button id="btn-print" type="button" class="btn-secondary">인쇄</button>
+        <button id="btn-home" type="button" class="btn-ghost">처음으로</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

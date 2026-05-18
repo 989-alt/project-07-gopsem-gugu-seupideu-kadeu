@@ -1,0 +1,12 @@
+.env
+.env.*
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
+.cache/
+.vite/
+.wrangler/
+tests/screenshots/
+tests/exported.json
